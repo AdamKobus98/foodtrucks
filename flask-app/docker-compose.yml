@@ -1,0 +1,33 @@
+version: '3.7' 
+services: 
+  python-flask-app-container:
+    image: ver1.0
+    container_name: python-flask-app-container
+    ports:
+     - "5000:5000"
+    networks:
+     - mynet
+    depends_on:
+     - es
+  es:
+    image: elasticsearch:6.8.23
+    container_name: es
+    ports:
+     - "9200:9200"
+    networks:
+      - mynet
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+     - ./nginx.conf:/etc/nginx/nginx.conf
+     - ./static:/usr/share/nginx/html/static
+     - ./templates:/usr/share/nginx/html/templates
+    networks:
+      - mynet
+    depends_on:
+     - python-flask-app-container
+networks:
+  mynet:
+    name: mynet
